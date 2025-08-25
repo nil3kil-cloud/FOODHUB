@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Milk Tea Stamp Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; background: #f9fafc; }
+    .container { max-width: 400px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+    h1 { color: #8d5c2c; text-align: center; }
+    .client-id { font-size: 1.2em; color: #444; margin-bottom: 1em; text-align: center;}
+    .stamp-count { font-size: 2em; color: #39885b; text-align: center; margin-bottom: 1em;}
+    .note { font-size: 0.95em; color: #666; text-align: center; margin-top: 2em;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Milk Tea Stamps</h1>
+    <div class="client-id" id="clientId"></div>
+    <div class="stamp-count" id="stampCount">Stamps: 0</div>
+    <div class="note">
+      Show this page at checkout to collect your stamp.<br>
+      Thank you for your loyalty!
+    </div>
+  </div>
+  <script>
+    // Get the client ID from the URL query string
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name) || 'Unknown';
+    }
+    // Example: Show the client ID
+    document.getElementById('clientId').textContent = "Client ID: " + getQueryParam('id');
+    // You can connect to your backend later to update the stamp count!
+  </script>
+</body>
+</html>
