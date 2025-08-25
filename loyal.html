@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loyalty Card</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+  header { background: #4CAF50; color: white; padding: 20px; text-align: center; }
+  .customer-info, .ranking { max-width: 500px; margin: 20px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+  h2 { margin-top: 0; }
+  .field { margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+  th { background: #4CAF50; color: white; }
+  tr:nth-child(even){background-color: #f2f2f2;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Loyalty Card</h1>
+</header>
+
+<div class="customer-info">
+  <h2>Your Info</h2>
+  <div class="field">Name: <span id="name">Loading...</span></div>
+  <div class="field">Current Stamp: <span id="current">0</span></div>
+  <div class="field">Total Stamp: <span id="total">0</span></div>
+  <div class="field">Goal: <span id="goal">0</span></div>
+  <div class="field">Claimed: <span id="claimed">0</span></div>
+</div>
+
+<div class="ranking">
+  <h2>Leaderboard</h2>
+  <table id="rankingTable">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Name</th>
+        <th>Current Stamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="3">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQj95N5eiZ5XeX3Wte1bCgyMIoox8D0Xis9GlSSoygp30kURVKkRfUfqRSVN1LmaeR3Z8NDqNMMnqN/pub?gid=0&single=true&output=csv';
+
+// Get CustomerID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const customerID = urlParams.get('CustomerID');
+
+function loadData() {
+  Papa.parse(csvUrl, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      const data = results.data.filter(row => row.CustomerID); // remove empty rows
+
+      // Find specific customer
+      const customer = data.find(c => c.CustomerID === customerID);
+      if(customer){
+        document.getElementById('name').innerText = customer.Name;
+        document.getElementById('current').innerText = customer.CurrentStamp;
+        document.getElementById('total').innerText = customer.TotalStamp;
+        document.getElementById('goal').innerText = customer.Goal;
+        document.getElementById('claimed').innerText = customer.Claimed;
+      } else {
+        document.getElementById('name').innerText = 'Customer not found';
+      }
+
+      // Sort data by CurrentStamp descending for leaderboard
+      data.sort((a,b) => parseInt(b.CurrentStamp) - parseInt(a.CurrentStamp));
+      const tbody = document.getElementById('rankingTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      data.forEach((c,i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i+1}</td><td>${c.Name}</td><td>${c.CurrentStamp}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+  });
+}
+
+// Initial load
+loadData();
+
+// Optional: refresh every 2 minutes for live leaderboard
+setInterval(loadData, 120000);
+
+</script>
+
+</body>
+</html>
